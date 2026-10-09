@@ -45,3 +45,14 @@ const progress=document.querySelector('.reading-progress');const hero=document.q
 function updateScroll(){const y=window.scrollY;const max=document.documentElement.scrollHeight-window.innerHeight;progress.style.transform=`scaleX(${max>0?Math.min(1,y/max):0})`;header.classList.toggle('scrolled',y>25);if(!reduceMotion.matches&&finePointer.matches&&y<hero.offsetTop+hero.offsetHeight){portrait.style.transform=`translateY(${Math.min(y*.075,42)}px) scale(1.025)`}else{portrait.style.transform='none'}let active=null;navTargets.forEach(item=>{if(item.section.getBoundingClientRect().top<=window.innerHeight*.4)active=item});navTargets.forEach(item=>{item.link.classList.toggle('active',item===active);if(item===active)item.link.setAttribute('aria-current','location');else item.link.removeAttribute('aria-current')});ticking=false}
 window.addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(updateScroll)}},{passive:true});window.addEventListener('resize',updateScroll,{passive:true});updateScroll();
 document.querySelectorAll('[data-duration]').forEach(button=>button.addEventListener('click',()=>{if(reduceMotion.matches)return;const grid=document.querySelector('.lesson-grid');grid.classList.remove('changing');requestAnimationFrame(()=>{requestAnimationFrame(()=>grid.classList.add('changing'))})}));
+
+// The compact teaching card opens its full description like a review.
+const systemDialog=document.querySelector('#system-dialog');
+const systemSummary=document.querySelector('.system-more summary');
+const systemContent=document.querySelector('.system-expanded');
+if(systemDialog&&systemSummary&&typeof systemDialog.showModal==='function'){
+ systemDialog.querySelector('.system-dialog-body').append(systemContent.cloneNode(true));
+ systemSummary.addEventListener('click',event=>{event.preventDefault();systemDialog.showModal()});
+ systemDialog.querySelector('.close-modal').addEventListener('click',()=>systemDialog.close());
+ systemDialog.addEventListener('click',event=>{if(event.target!==systemDialog)return;const r=systemDialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)systemDialog.close()});
+}
